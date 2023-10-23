@@ -158,26 +158,36 @@ setUpNodeEnv() {
 setUpDotnetEnv() {
     echo "Setting up Datadog tracing for .NET"
     if [ -z "${DD_DOTNET_TRACER_VERSION}" ]; then
-        DD_DOTNET_TRACER_VERSION=2.36.0
+        DD_DOTNET_TRACER_VERSION=2.40.0
     fi
-    DD_DOTNET_TRACER_FILE=datadog-dotnet-apm-${DD_DOTNET_TRACER_VERSION}.tar.gz
-    DD_DOTNET_TRACER_URL=https://github.com/DataDog/dd-trace-dotnet/releases/download/v${DD_DOTNET_TRACER_VERSION}/${DD_DOTNET_TRACER_FILE}
 
-    echo "Installing .NET tracer from ${DD_DOTNET_TRACER_URL}"
-    if curl -L --fail "${DD_DOTNET_TRACER_URL}" -o "${DD_DOTNET_TRACER_FILE}"; then
-        tar -xzf "${DD_DOTNET_TRACER_FILE}" || return
-    else
-        echo "Downloading the tracer was unsuccessful"
-        return
+    # Set a tracer directory to avoid issues with unarchiving
+    DD_DOTNET_TRACER_DIR="${DD_DIR}/dd-trace-dotnet-v${DD_DOTNET_TRACER_VERSION}"
+
+    # If the tracer directory doesn't exist, then we can download the tracer.
+    if [ ! -d "$DD_DOTNET_TRACER_DIR" ]; then
+        mkdir -p "${DD_DOTNET_TRACER_DIR}" && cd "${DD_DOTNET_TRACER_DIR}" || return
+
+        DD_DOTNET_TRACER_FILE=datadog-dotnet-apm-${DD_DOTNET_TRACER_VERSION}.tar.gz
+        DD_DOTNET_TRACER_URL=https://github.com/DataDog/dd-trace-dotnet/releases/download/v${DD_DOTNET_TRACER_VERSION}/${DD_DOTNET_TRACER_FILE}
+
+        echo "Installing .NET tracer from ${DD_DOTNET_TRACER_URL}"
+        if curl -L --fail "${DD_DOTNET_TRACER_URL}" -o "${DD_DOTNET_TRACER_FILE}"; then
+            tar -xzf "${DD_DOTNET_TRACER_FILE}" || return
+        else
+            echo "Downloading the tracer was unsuccessful"
+            return
+        fi
     fi
 
     export CORECLR_ENABLE_PROFILING=1
     export CORECLR_PROFILER="{846F5F1C-F9AE-4B07-969E-05C26BC060D8}"
-    export CORECLR_PROFILER_PATH="${DD_DIR}/Datadog.Trace.ClrProfiler.Native.so"
-    export DD_DOTNET_TRACER_HOME="${DD_DIR}"
+    export CORECLR_PROFILER_PATH="${DD_DOTNET_TRACER_DIR}/Datadog.Trace.ClrProfiler.Native.so"
+    export DD_DOTNET_TRACER_HOME="${DD_DOTNET_TRACER_DIR}"
+
     if [[ "${DD_PROFILING_ENABLED:-,,}" == "1" ]]; then
         echo "Profiler is enabled."
-        export LD_PRELOAD="${DD_DIR}/continuousprofiler/Datadog.Linux.ApiWrapper.x64.so ${LD_PRELOAD}"
+        export LD_PRELOAD="${DD_DOTNET_TRACER_DIR}/continuousprofiler/Datadog.Linux.ApiWrapper.x64.so ${LD_PRELOAD}"
         # Allow the profiler to add this to its tag
         export WEBSITE_OS="linux"
     fi
