@@ -62,7 +62,7 @@ setEnvVars() {
     fi
 
     if [ -z "${DD_AAS_LINUX_VERSION}" ]; then
-        DD_AAS_LINUX_VERSION="v1.7.0"
+        DD_AAS_LINUX_VERSION="v1.8.0"
     fi
 
     if [ -z "${DD_BINARY_DIR}" ]; then
@@ -118,6 +118,9 @@ getBinaries() {
             echo "Removing zip file"
             rm "${FILE}"
 
+            # The trace agent requires a datadog.yaml
+            touch "${DD_BINARY_DIR}/datadog.yaml"
+
         else
             echo "Failed to download the Datadog binary succesfully."
             return
@@ -134,7 +137,7 @@ startBinaries() {
 
     if [ "${DD_TRACE_ENABLED}" = "true" ]; then
         echo "Starting the trace agent"
-        eval "${DD_BINARY_DIR}/process_manager ${BINARY_DIR}/trace-agent &"
+        eval "${DD_BINARY_DIR}/process_manager ${BINARY_DIR}/trace-agent run -c ${DD_BINARY_DIR} &"
     fi
 
     if [ "$DD_CUSTOM_METRICS_ENABLED" = "true" ]; then
