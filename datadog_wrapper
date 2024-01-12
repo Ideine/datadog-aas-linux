@@ -5,6 +5,9 @@ main() {
     export DD_AZURE_APP_SERVICES=1
     export DD_HOSTNAME="none"
 
+    # Remote Config does not work in AAS. It must be disabled.
+    export DD_REMOTE_CONFIGURATION_ENABLED=false
+
     if [ -z "${DD_CHDIR}" ]; then
         CURRENT_DIR=$(pwd)
     else
@@ -62,7 +65,7 @@ setEnvVars() {
     fi
 
     if [ -z "${DD_AAS_LINUX_VERSION}" ]; then
-        DD_AAS_LINUX_VERSION="v1.8.1"
+        DD_AAS_LINUX_VERSION="v1.9.0"
     fi
 
     if [ -z "${DD_BINARY_DIR}" ]; then
@@ -84,24 +87,17 @@ setEnvVars() {
 }
 
 getRuntimeDependencies() {
-    # There are multiple base images used for runtimes. We need to ensure all required dependencies are available.
-    if [ "${WEBSITE_STACK}" == "JAVA" ]; then
-        DD_JAVA_VERSION=$(java -fullversion 2>&1 | awk -F'[".]' '{print $2}')
-    fi
-
-    if [ "${WEBSITE_STACK}" == "TOMCAT" ]; then
-        DD_TOMCAT_VERSION=$(echo "${TOMCAT_VERSION}" | awk -F. '{print $1}')
-    fi
-
-
-    if [ "${WEBSITE_STACK}" == "PHP" ] || [ "${DD_JAVA_VERSION}" == "17" ] || [ "${DD_TOMCAT_VERSION}" == "10" ]; then
-        apt-get update && apt-get install -y unzip
-    fi
-
-    # output is openjdk full version "1.8.0_345-b01" for java 8 and openjdk full version "17.0.7+7-LTS" for 17
-    if [ "${DD_JAVA_VERSION}" == "1" ] || [ "${DD_JAVA_VERSION}" == "11" ] ||[ "${DD_TOMCAT_VERSION}" == "9" ]; then
-        apk add curl
-        apk add libc6-compat
+    # If we are in Java, Tomcat or PHP stacks, we need to find the linux type to install unzip and curl
+    if [ "${WEBSITE_STACK}" == "JAVA" ] || [ "${WEBSITE_STACK}" == "TOMCAT" ] || [ "${WEBSITE_STACK}" == "PHP" ]; then
+        LINUX_VERSION_NAME=$(. "/etc/os-release"; echo "$ID")
+        if [ "${LINUX_VERSION_NAME}" == "ubuntu" ] || [ "${LINUX_VERSION_NAME}" == "debian" ]; then
+            apt-get update
+            apt-get install -y unzip
+            apt-get install -y curl
+        else
+            apk add curl
+            apk add libc6-compat
+        fi
     fi
 }
 
