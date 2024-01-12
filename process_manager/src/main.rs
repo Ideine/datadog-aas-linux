@@ -9,10 +9,14 @@ fn main() {
     let dd_arg = command.get_program().to_str().unwrap();
     if dd_arg.ends_with("dogstatsd") {
         command.arg(&dd_command[2]);
+    // trace-agent requires the args: run -c <datadog.yaml location>
+    } else if dd_arg.ends_with("trace-agent") {
+        command.args(&dd_command[2..=4]);
     }
 
     spawn(command);
 }
+
 fn spawn(mut command: Command) {
     if let Ok(mut dd_process) = command.spawn() {
         let status = dd_process.wait().expect("dd_process wasn't running");
