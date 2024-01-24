@@ -4,10 +4,11 @@ on:
     release:
         types: [prereleased]
 
+
 jobs:
     update_apps:
         runs-on: ubuntu-latest
-        environment: update_self_monitoring
+        environment: dev
         strategy:
             matrix:
                 app_names: [
