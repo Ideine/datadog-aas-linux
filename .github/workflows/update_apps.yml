@@ -1,0 +1,46 @@
+name: update_self_monitoring_apps
+
+on:
+  release:
+    types: [prereleased]
+
+
+jobs:
+  update_apps:
+    runs-on: ubuntu-latest
+    # Set the env for Azure managed identity federated credentials for OIDC
+    # https://github.com/marketplace/actions/azure-login#login-with-openid-connect-oidc-recommendeda
+    environment: dev
+    strategy:
+      matrix:
+        app_names: [
+          "serverless-dotnet6-self-monitoring",
+          "serverless-dotnet7-self-monitoring",
+          "serverless-java-springboot-self-monitoring",
+          "serverless-node-express-self-monitoring",
+          "serverless-php-laravel-self-monitoring",
+          "serverless-py-django-self-monitoring",
+          "serverless-tomcat-self-monitoring"
+        ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Azure login
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        id: deploy-to-webapp
+        with:
+          app-name: ${{ matrix.app_names }}
+          startup-command: 'curl -s https://raw.githubusercontent.com/DataDog/datadog-aas-linux/${{ github.event.release.tag_name }}/datadog_wrapper | bash'
+
+
+
+
