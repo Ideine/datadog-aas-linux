@@ -14,13 +14,13 @@ jobs:
     strategy:
       matrix:
         app_names: [
-            "serverless-dotnet6-self-monitoring",
-            "serverless-dotnet7-self-monitoring",
-            "serverless-java-springboot-self-monitoring",
-            "serverless-node-express-self-monitoring",
-            "serverless-php-laravel-self-monitoring",
-            "serverless-py-django-self-monitoring",
-            "serverless-tomcat-self-monitoring"
+          "serverless-dotnet6-self-monitoring",
+          "serverless-dotnet7-self-monitoring",
+          "serverless-java-springboot-self-monitoring",
+          "serverless-node-express-self-monitoring",
+          "serverless-php-laravel-self-monitoring",
+          "serverless-py-django-self-monitoring",
+          "serverless-tomcat-self-monitoring"
         ]
 
     steps:
