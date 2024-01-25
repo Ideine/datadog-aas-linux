@@ -25,10 +25,6 @@ jobs:
           - name: Checkout
             uses: actions/checkout@v3
 
-          - name: Set latest tag
-            id: set-latest-tag
-            run: echo "latest_tag=$(git tag | sort --version-sort | tail -n1)" >> $GITHUB_ENV
-
           - name: Azure login
             uses: azure/login@v1
             with:
