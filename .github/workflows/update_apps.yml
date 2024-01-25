@@ -8,6 +8,8 @@ on:
 jobs:
     update_apps:
         runs-on: ubuntu-latest
+        # Set the env for Azure managed identity federated credentials for OIDC
+        # https://github.com/marketplace/actions/azure-login#login-with-openid-connect-oidc-recommendeda
         environment: dev
         strategy:
             matrix:
