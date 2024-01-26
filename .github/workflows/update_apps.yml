@@ -1,9 +1,7 @@
 name: update_self_monitoring_apps
 
 on:
-  release:
-    types: [prereleased]
-
+  workflow_dispatch:
 
 jobs:
   update_apps:
