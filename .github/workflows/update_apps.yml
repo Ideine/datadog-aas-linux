@@ -2,12 +2,6 @@ name: update_self_monitoring_apps
 
 on:
   workflow_dispatch:
-    inputs:
-      name:
-        required: true
-        type: tag
-        description: 'tag to release e.g. v1.0.0'
-
 
 permissions:
   id-token: write
@@ -45,7 +39,7 @@ jobs:
         id: deploy-to-webapp
         with:
           app-name: ${{ matrix.app_names }}
-          startup-command: 'curl -s https://raw.githubusercontent.com/DataDog/datadog-aas-linux/${{ github.event.inputs.tag }}/datadog_wrapper | bash'
+          startup-command: 'curl -s https://raw.githubusercontent.com/DataDog/datadog-aas-linux/${{ github.event.ref }}/datadog_wrapper | bash'
 
 
 
