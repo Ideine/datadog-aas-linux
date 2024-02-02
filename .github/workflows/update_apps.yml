@@ -13,18 +13,6 @@ jobs:
     # Set the env for Azure managed identity federated credentials for OIDC
     # https://github.com/marketplace/actions/azure-login#login-with-openid-connect-oidc-recommendeda
     environment: dev
-    strategy:
-      matrix:
-        app_names: [
-          "serverless-dotnet6-self-monitoring",
-          "serverless-dotnet7-self-monitoring",
-          "serverless-java-springboot-self-monitoring",
-          "serverless-node-express-self-monitoring",
-          "serverless-php-laravel-self-monitoring",
-          "serverless-py-django-self-monitoring",
-          "serverless-tomcat-self-monitoring"
-        ]
-
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -34,13 +22,15 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Deploy to Azure Web App
-        uses: azure/webapps-deploy@v2
-        id: deploy-to-webapp
+      - name: Update Azure Web Apps
+        uses: azure/cli@v1
         with:
-          app-name: ${{ matrix.app_names }}
-          startup-command: 'curl -s https://raw.githubusercontent.com/DataDog/datadog-aas-linux/${{ github.event.ref }}/datadog_wrapper | bash'
-
-
+          inlineScript: |
+            az webapp deploy --resource-group "serverless-aas-linux" --name "serverless-dotnet6-self-monitoring" --src-path ./datadog_wrapper --type=startup
+            az webapp deploy --resource-group "serverless-aas-linux" --name "serverless-java-springboot-self-monitoring" --src-path ./datadog_wrapper --type=startup
+            az webapp deploy --resource-group "serverless-aas-linux" --name "serverless-node-express-self-monitoring" --src-path ./datadog_wrapper --type=startup
+            az webapp deploy --resource-group "serverless-aas-linux" --name "serverless-php-laravel-self-monitoring" --src-path ./datadog_wrapper --type=startup
+            az webapp deploy --resource-group "serverless-aas-linux" --name "serverless-py-django-self-monitoring" --src-path ./datadog_wrapper --type=startup
+            az webapp deploy --resource-group "serverless-aas-linux" --name "serverless-tomcat-self-monitoring" --src-path ./datadog_wrapper --type=startup
 
 
