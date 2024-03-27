@@ -65,7 +65,7 @@ setEnvVars() {
     fi
 
     if [ -z "${DD_AAS_LINUX_VERSION}" ]; then
-        DD_AAS_LINUX_VERSION="v1.10.3"
+        DD_AAS_LINUX_VERSION="v1.10.4"
     fi
 
     if [ -z "${DD_BINARY_DIR}" ]; then
@@ -157,7 +157,7 @@ setUpNodeEnv() {
 setUpDotnetEnv() {
     echo "Setting up Datadog tracing for .NET"
     if [ -z "${DD_DOTNET_TRACER_VERSION}" ]; then
-        DD_DOTNET_TRACER_VERSION=2.44.0
+        DD_DOTNET_TRACER_VERSION=2.49.0
     fi
 
     # Set a tracer directory to avoid issues with unarchiving
@@ -195,7 +195,7 @@ setUpDotnetEnv() {
 setUpJavaEnv() {
     echo "Setting up Datadog tracing for Java"
     if [ -z "${DD_JAVA_TRACER_VERSION}" ]; then
-        DD_JAVA_TRACER_VERSION=1.26.1
+        DD_JAVA_TRACER_VERSION=1.31.2
     fi
 
     echo "Using version ${DD_JAVA_TRACER_VERSION} of the JAVA tracer"
@@ -221,7 +221,7 @@ setUpJavaEnv() {
 setupPHPEnv() {
     echo "Setting up Datadog tracing for PHP"
     if [ -z "${DD_PHP_TRACER_VERSION}" ]; then
-        DD_PHP_TRACER_VERSION=0.96.0
+        DD_PHP_TRACER_VERSION=0.98.1
     fi
 
     DD_PHP_TRACER_URL=https://github.com/DataDog/dd-trace-php/releases/download/${DD_PHP_TRACER_VERSION}/datadog-setup.php
@@ -238,7 +238,7 @@ setupPHPEnv() {
 setUpPyEnv() {
     echo "Setting up Datadog tracing for Python"
     if [ -z "${DD_PYTHON_TRACER_VERSION}" ]; then
-        DD_PYTHON_TRACER_VERSION=2.4.0
+        DD_PYTHON_TRACER_VERSION=2.7.4
     fi
 
     pip install ddtrace
