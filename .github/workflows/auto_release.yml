@@ -21,7 +21,7 @@ jobs:
           file: ../../Dockerfile
           platforms: linux/amd64
           build-args: |
-            AGENT_VERSION=7.50.1
+            AGENT_VERSION=7.52.0
             RELEASE_VERSION=${{ github.ref_name }}
           tags: datadog-aas
           load: true
