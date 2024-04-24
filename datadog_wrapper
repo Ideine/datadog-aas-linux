@@ -65,7 +65,11 @@ setEnvVars() {
     fi
 
     if [ -z "${DD_AAS_LINUX_VERSION}" ]; then
-        DD_AAS_LINUX_VERSION="v1.10.4"
+        DD_AAS_LINUX_VERSION="v1.10.5"
+    fi
+
+    if [-z "${DD_TRACE_LOG_DIRECTORY}"]; then
+        DD_TRACE_LOG_DIRECTORY="/home/LogFiles/datadog/${DD_AAS_LINUX_VERSION}"
     fi
 
     if [ -z "${DD_BINARY_DIR}" ]; then
@@ -114,8 +118,10 @@ getBinaries() {
             echo "Removing zip file"
             rm "${FILE}"
 
-            # The trace agent requires a datadog.yaml
-            touch "${DD_BINARY_DIR}/datadog.yaml"
+            # patch the datadog yaml file to set the aas version for logging path for easier navigation
+            sed -i 's\{AAS_LINUX_VERSION}\'"$DD_AAS_LINUX_VERSION"'\g' ./datadog.yaml
+            # patch the dogstatsD yaml file to set the aas version for logging path for easier navigation
+            sed -i 's\{AAS_LINUX_VERSION}\'"$DD_AAS_LINUX_VERSION"'\g' ./dogstatsd.yaml
 
         else
             echo "Failed to download the Datadog binary succesfully."
