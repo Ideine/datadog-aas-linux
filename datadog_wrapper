@@ -118,6 +118,9 @@ getBinaries() {
             echo "Removing zip file"
             rm "${FILE}"
 
+            echo "Creating logs director at ${DD_TRACE_LOG_DIRECTORY}"
+            mkdir -p "${DD_TRACE_LOG_DIRECTORY}"
+
             # patch the datadog yaml file to set the aas version for logging path for easier navigation
             sed -i 's\{AAS_LINUX_VERSION}\'"$DD_AAS_LINUX_VERSION"'\g' "${DD_BINARY_DIR}"/datadog.yaml
             # patch the dogstatsD yaml file to set the aas version for logging path for easier navigation
