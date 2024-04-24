@@ -68,7 +68,7 @@ setEnvVars() {
         DD_AAS_LINUX_VERSION="v1.10.5"
     fi
 
-    if [-z "${DD_TRACE_LOG_DIRECTORY}"]; then
+    if [ -z "${DD_TRACE_LOG_DIRECTORY}"]; then
         DD_TRACE_LOG_DIRECTORY="/home/LogFiles/datadog/${DD_AAS_LINUX_VERSION}"
     fi
 

@@ -1,6 +1,7 @@
 # Build process manager
 FROM rust:latest as rust-binary
 COPY /process_manager/ .
+
 RUN rustup target add x86_64-unknown-linux-musl
 RUN cargo build --release --target=x86_64-unknown-linux-musl
 
@@ -25,6 +26,8 @@ RUN curl -LO https://apt.datadoghq.com/pool/d/da/datadog-dogstatsd_${AGENT_VERSI
 RUN dpkg -i datadog-dogstatsd_${AGENT_VERSION}-1_amd64.deb
 RUN mv opt/datadog-dogstatsd/bin/dogstatsd ${RELEASE_VERSION}/
 
-# strip binaries and zip folder for release
+# strip binaries, copy configs and zip folder for release
 RUN strip /${RELEASE_VERSION}/*
+COPY /dogstatsd.yaml ${RELEASE_VERSION}/
+COPY /datadog.yaml ${RELEASE_VERSION}/
 RUN zip -r /datadog-aas-${RELEASE_VERSION}.zip /${RELEASE_VERSION}
