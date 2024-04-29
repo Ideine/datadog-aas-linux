@@ -112,7 +112,7 @@ getBinaries() {
         FILE="datadog-aas-${DD_AAS_LINUX_VERSION}.zip"
 
         echo "Downloading Datadog AAS binary ${DD_BINARIES_URL}/${DD_AAS_LINUX_VERSION}/${FILE}"
-        if curl -L --fail "${DD_BINARIES_URL}/${DD_AAS_LINUX_VERSION}/${FILE}" -o "${FILE}"; then
+        #if curl -L --fail "${DD_BINARIES_URL}/${DD_AAS_LINUX_VERSION}/${FILE}" -o "${FILE}"; then
             echo "Unzipping files"
             unzip "${FILE}" || return
             echo "Removing zip file"
@@ -126,10 +126,10 @@ getBinaries() {
             # patch the dogstatsD yaml file to set the aas version for logging path for easier navigation
             sed -i 's\{AAS_LINUX_VERSION}\'"$DD_AAS_LINUX_VERSION"'\g' "${DD_BINARY_DIR}"/dogstatsd.yaml
 
-        else
-            echo "Failed to download the Datadog binary succesfully."
-            return
-        fi
+        #else
+        #    echo "Failed to download the Datadog binary succesfully."
+        #    return
+        #fi
 
     else
         echo "Version ${DD_AAS_LINUX_VERSION} of Datadog AAS previously installed"
@@ -142,12 +142,12 @@ startBinaries() {
 
     if [ "${DD_TRACE_ENABLED}" = "true" ]; then
         echo "Starting the trace agent"
-        eval "${DD_BINARY_DIR}/process_manager ${BINARY_DIR}/trace-agent run -c ${DD_BINARY_DIR} &"
+        eval "${DD_BINARY_DIR}/process_manager ${BINARY_DIR}/trace-agent run -c ${DD_BINARY_DIR}/datadog.yaml &"
     fi
 
     if [ "$DD_CUSTOM_METRICS_ENABLED" = "true" ] || [ "$DD_RUNTIME_METRICS_ENABLED" = "true" ]; then
         echo "Starting DogStatsD"
-        eval "${DD_BINARY_DIR}/process_manager ${BINARY_DIR}/dogstatsd start &"
+        eval "${DD_BINARY_DIR}/process_manager ${BINARY_DIR}/dogstatsd start -c ${DD_BINARY_DIR}/dogstatsd.yaml &"
     fi
 }
 
