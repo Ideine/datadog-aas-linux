@@ -112,7 +112,7 @@ getBinaries() {
         FILE="datadog-aas-${DD_AAS_LINUX_VERSION}.zip"
 
         echo "Downloading Datadog AAS binary ${DD_BINARIES_URL}/${DD_AAS_LINUX_VERSION}/${FILE}"
-        #if curl -L --fail "${DD_BINARIES_URL}/${DD_AAS_LINUX_VERSION}/${FILE}" -o "${FILE}"; then
+        if curl -L --fail "${DD_BINARIES_URL}/${DD_AAS_LINUX_VERSION}/${FILE}" -o "${FILE}"; then
             echo "Unzipping files"
             unzip "${FILE}" || return
             echo "Removing zip file"
@@ -126,10 +126,10 @@ getBinaries() {
             # patch the dogstatsD yaml file to set the aas version for logging path for easier navigation
             sed -i 's\{AAS_LINUX_VERSION}\'"$DD_AAS_LINUX_VERSION"'\g' "${DD_BINARY_DIR}"/dogstatsd.yaml
 
-        #else
-        #    echo "Failed to download the Datadog binary succesfully."
-        #    return
-        #fi
+        else
+            echo "Failed to download the Datadog binary succesfully."
+            return
+        fi
 
     else
         echo "Version ${DD_AAS_LINUX_VERSION} of Datadog AAS previously installed"
