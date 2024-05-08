@@ -118,7 +118,7 @@ getBinaries() {
             echo "Removing zip file"
             rm "${FILE}"
 
-            echo "Creating logs director at ${DD_TRACE_LOG_DIRECTORY}"
+            echo "Creating logs directory at ${DD_TRACE_LOG_DIRECTORY}"
             mkdir -p "${DD_TRACE_LOG_DIRECTORY}"
 
             # patch the datadog yaml file to set the aas version for logging path for easier navigation
