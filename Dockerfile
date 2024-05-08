@@ -1,7 +1,6 @@
 # Build process manager
 FROM rust:latest as rust-binary
 COPY /process_manager/ .
-
 RUN rustup target add x86_64-unknown-linux-musl
 RUN cargo build --release --target=x86_64-unknown-linux-musl
 
