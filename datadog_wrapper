@@ -61,7 +61,7 @@ setEnvVars() {
     fi
 
     if [ -z "${DD_BINARIES_URL}" ]; then
-        DD_BINARIES_URL="https://github.com/TophrC-dd/datadog-aas-linux/releases/download"
+        DD_BINARIES_URL="https://github.com/datadog/datadog-aas-linux/releases/download"
     fi
 
     if [ -z "${DD_AAS_LINUX_VERSION}" ]; then
