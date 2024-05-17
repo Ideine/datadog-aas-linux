@@ -17,14 +17,16 @@ COPY --from=rust-binary /target/x86_64-unknown-linux-musl/release/process_manage
 
 # trace agent
 RUN curl -LO https://apt.datadoghq.com/pool/d/da/datadog-agent_${AGENT_VERSION}-1_amd64.deb
-RUN dpkg -i datadog-agent_${AGENT_VERSION}-1_amd64.deb
-RUN mv opt/datadog-agent/embedded/bin/trace-agent ${RELEASE_VERSION}/
+RUN dpkg -x datadog-agent_${AGENT_VERSION}-1_amd64.deb /tmp/
+RUN mv /tmp/opt/datadog-agent/embedded/bin/trace-agent ${RELEASE_VERSION}/
 
 # dogstatsd
 RUN curl -LO https://apt.datadoghq.com/pool/d/da/datadog-dogstatsd_${AGENT_VERSION}-1_amd64.deb
-RUN dpkg -i datadog-dogstatsd_${AGENT_VERSION}-1_amd64.deb
-RUN mv opt/datadog-dogstatsd/bin/dogstatsd ${RELEASE_VERSION}/
+RUN dpkg -x datadog-dogstatsd_${AGENT_VERSION}-1_amd64.deb /tmp/
+RUN mv /tmp/opt/datadog-dogstatsd/bin/dogstatsd ${RELEASE_VERSION}/
 
-# strip binaries and zip folder for release
+# strip binaries, copy configs and zip folder for release
 RUN strip /${RELEASE_VERSION}/*
+COPY /dogstatsd.yaml ${RELEASE_VERSION}/
+COPY /datadog.yaml ${RELEASE_VERSION}/
 RUN zip -r /datadog-aas-${RELEASE_VERSION}.zip /${RELEASE_VERSION}

@@ -5,12 +5,11 @@ fn main() {
     let dd_command: Vec<String> = env::args().collect();
     let mut command = Command::new(&dd_command[1]);
 
-    // dogstatsd requires a start argument to run
-    let dd_arg = command.get_program().to_str().unwrap();
-    if dd_arg.ends_with("dogstatsd") {
-        command.arg(&dd_command[2]);
+    // dogstatsd requires a start argument also including a declaration argument 
+    // for config path -c <dogstatsd.yaml location>
     // trace-agent requires the args: run -c <datadog.yaml location>
-    } else if dd_arg.ends_with("trace-agent") {
+    let dd_arg = command.get_program().to_str().unwrap();
+    if dd_arg.ends_with("dogstatsd") || dd_arg.ends_with("trace-agent") {
         command.args(&dd_command[2..=4]);
     }
 

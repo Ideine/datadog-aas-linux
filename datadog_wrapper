@@ -65,7 +65,11 @@ setEnvVars() {
     fi
 
     if [ -z "${DD_AAS_LINUX_VERSION}" ]; then
-        DD_AAS_LINUX_VERSION="v1.10.4"
+        DD_AAS_LINUX_VERSION="v1.10.5"
+    fi
+
+    if [ -z "${DD_TRACE_LOG_DIRECTORY}"]; then
+        DD_TRACE_LOG_DIRECTORY="/home/LogFiles/datadog/${DD_AAS_LINUX_VERSION}"
     fi
 
     if [ -z "${DD_BINARY_DIR}" ]; then
@@ -114,8 +118,13 @@ getBinaries() {
             echo "Removing zip file"
             rm "${FILE}"
 
-            # The trace agent requires a datadog.yaml
-            touch "${DD_BINARY_DIR}/datadog.yaml"
+            echo "Creating logs directory at ${DD_TRACE_LOG_DIRECTORY}"
+            mkdir -p "${DD_TRACE_LOG_DIRECTORY}"
+
+            # patch the datadog yaml file to set the aas version for logging path for easier navigation
+            sed -i 's\{AAS_LINUX_VERSION}\'"$DD_AAS_LINUX_VERSION"'\g' "${DD_BINARY_DIR}"/datadog.yaml
+            # patch the dogstatsD yaml file to set the aas version for logging path for easier navigation
+            sed -i 's\{AAS_LINUX_VERSION}\'"$DD_AAS_LINUX_VERSION"'\g' "${DD_BINARY_DIR}"/dogstatsd.yaml
 
         else
             echo "Failed to download the Datadog binary succesfully."
@@ -133,12 +142,12 @@ startBinaries() {
 
     if [ "${DD_TRACE_ENABLED}" = "true" ]; then
         echo "Starting the trace agent"
-        eval "${DD_BINARY_DIR}/process_manager ${BINARY_DIR}/trace-agent run -c ${DD_BINARY_DIR} &"
+        eval "${DD_BINARY_DIR}/process_manager ${BINARY_DIR}/trace-agent run -c ${DD_BINARY_DIR}/datadog.yaml &"
     fi
 
     if [ "$DD_CUSTOM_METRICS_ENABLED" = "true" ] || [ "$DD_RUNTIME_METRICS_ENABLED" = "true" ]; then
         echo "Starting DogStatsD"
-        eval "${DD_BINARY_DIR}/process_manager ${BINARY_DIR}/dogstatsd start &"
+        eval "${DD_BINARY_DIR}/process_manager ${BINARY_DIR}/dogstatsd start -c ${DD_BINARY_DIR}/dogstatsd.yaml &"
     fi
 }
 
