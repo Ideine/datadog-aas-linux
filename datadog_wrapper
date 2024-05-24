@@ -152,13 +152,13 @@ startBinaries() {
 }
 
 setUpNodeEnv() {
-    NODE_RUNTIME_VERSION="`node --version`"
+    NODE_RUNTIME_VERSION=$(node --version}
     echo "Found runtime version ${NODE_RUNTIME_VERSION}"
     echo "Setting up Datadog tracing for Node"
     echo "Installing Node tracer"
 
     if [[ "$NODE_RUNTIME_VERSION" =~ ^v16.* ]]; then
-        yarn add "dd-trace@^4.38.1" || return
+        yarn add "dd-trace@4.38.1" || return
     else
         yarn add dd-trace || return
     fi
